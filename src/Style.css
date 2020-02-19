@@ -1,0 +1,19 @@
+.header  {
+padding: 50px;
+color:#ff0
+}
+.page {
+    border: 1px solid #e5e5e5;
+    margin: 20px;
+    padding: 10px;
+    box-shadow: 1px 1px 1px 2px #ee6755
+}
+
+.col-right {
+    border-left: 1px solid #e5e5e5;
+    height: 400px;
+}
+.col-left {
+    height: 400px;
+    overflow: auto;
+}

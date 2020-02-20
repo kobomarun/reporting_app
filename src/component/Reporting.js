@@ -26,7 +26,9 @@ class Reporting extends Component {
 
      getUnique = (array) => {
         let uniqueArray = [];
-
+        
+        // Loop through array values
+        let c = 0;
         for(let i=0; i < array.length; i++){
             if(uniqueArray.indexOf(array[i]) === -1) {
                 uniqueArray.push(array[i]);
@@ -47,14 +49,15 @@ class Reporting extends Component {
                 allSelected.push(list)
             })
         })
+        let x = (names) => names.filter((v,i) => names.indexOf(v) === i)
         const filterdData = allSelected.filter(dd => {
             if(dd[0] === response) {
-                return dd[1]
+                return [dd[0]]
             }
         })
-        // console.log('sele',allSelected)
+        console.log('sele',allSelected)
         this.setState({name: response, 
-            count: allSelected.length, 
+            count: this.state.posts.length, 
             distinct: this.getUnique(allSelected),
             data: filterdData,
             list: true,
@@ -62,13 +65,26 @@ class Reporting extends Component {
         })
 
         
-        console.log('dfdf',this.getUnique(filterdData))
+        console.log('dfdf',filterdData)
     }
+
+    getOccurrence = (array, value) => {
+        var count = 0;
+        array.forEach((v) => (v === value && count++));
+        return count;
+    }
+    
 
     
 
     render() {
+        let arr = []
+
         const { posts, data, distinct , selected} = this.state
+        data.map(row => {
+            arr.push(row[1])
+        })
+        console.log('cds',this.getUnique(arr).map(rrr => rrr))
         return(
             <React.Fragment>
                 <div className="container page middle">
@@ -126,14 +142,16 @@ class Reporting extends Component {
                         <h2 className="h4">List view for {this.state.name}. Total: <span className="badge"> {this.state.count}</span></h2>
                         <div className="num_count badge">{`${this.state.name}(${this.state.count})`}</div>
                             <ul className="list-group">
-                                { this.getUnique(data).map(row => {
+                                { this.getUnique(arr).map(row => {
+                                   
                                     return(
-                                        <li className="list-group-item">{row[1]} <span className="badge">{row[1].length}</span></li>
+                                        <li className="list-group-item">{row} <span className="badge">{this.getOccurrence(arr, row)}</span></li>
 
                                     )
                                 })
-                                
                                 }
+                                                                { console.log('cd',this.getUnique(arr))}
+
                             </ul>
                     </div>
                 </div>

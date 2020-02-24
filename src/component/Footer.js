@@ -1,6 +1,5 @@
 import React from 'react'
 import '../Style.css'
-import Logo from '../54gene_Logo.svg'
 
 const Footer = () => (
     <React.Fragment>

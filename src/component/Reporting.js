@@ -78,6 +78,7 @@ class Reporting extends Component {
   render() {
     let arr = [];
     let sendCSV = []
+    let alQuestion = []
     const { posts, data, distinct, selected } = this.state;
     data.map(row => {
       arr.push(row[1]);
@@ -86,6 +87,8 @@ class Reporting extends Component {
       "cds",
       this.getUnique(arr).map(rrr => rrr)
     );
+    
+    console.log('que',alQuestion)
     return (
       <React.Fragment>
         <Header title="Reporting for AfRef Participants"/>
@@ -101,9 +104,12 @@ class Reporting extends Component {
                       onChange={e => this.selectParticipantInfo(e)}
                     >
                       <option value="">Select Participant Information</option>
-                      {this.state.posts.map((list, i) =>
-                        Object.entries(list).map(item => {
-                          return <option value={item[0]}>{item[0]}</option>;
+                      {posts.map((list, i) =>
+                        Object.entries(list).map((item,j) => {
+                            if(i == 1) {
+                                return <option value={item[0]}>{item[0]}</option>
+                            }
+                          
                         })
                       )}
                     </select>
@@ -130,7 +136,7 @@ class Reporting extends Component {
                   {this.getUnique(arr).map(row => {
                     return (
                       <li className="list-group-item">
-                        {row}{" "}
+                            {row}{" "}
                         <span className="badge">
                           {this.getOccurrence(arr, row)}
                         </span>

@@ -1,13 +1,17 @@
 .header  {
-padding: 50px;
-color:#ff0
+background-color: #f1f3f5;
+padding: 25px;
+font-size: 20px;
+text-align: center;
+
 }
-.page {
-    border: 1px solid #e5e5e5;
-    margin: 20px;
-    padding: 10px;
-    box-shadow: 1px 1px 1px 2px #ee6755
+
+.header_bg {
+    background-color:#e5e5e5;
+    height: 30px;
+    clear: both;
 }
+
 
 .col-right {
     border-left: 1px solid #e5e5e5;
@@ -16,4 +20,43 @@ color:#ff0
 .col-left {
     height: 400px;
     overflow: auto;
+}
+
+.card {
+    margin-top: 90px;
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+    height: 200px;
+    background-color: #54649B;
+    cursor: pointer;
+}
+.card-header {
+    margin-right: -15px;
+    margin-left: -15px;
+    margin-top: -20px;
+    background-color: #f1f3f5;
+    height: 40px;
+}
+
+.card-header h3 {
+    font-size: 18px;
+    line-height: 2;
+}
+
+.footer {
+    background-color:#e5e5e5;
+    margin-top: 30px;
+    height: 60px;
+}
+.footer-text {
+    text-align: center;
+    line-height: 3;
+}
+.card-body {
+
+}
+
+.card-body-text {
+    font-size: 16px;
+    color:#fff;
 }

@@ -52,11 +52,12 @@ text-align: center;
     text-align: center;
     line-height: 3;
 }
-.card-body {
-
-}
 
 .card-body-text {
     font-size: 16px;
     color:#fff;
+}
+
+.ad_search {
+    margin-top:-60px;
 }

@@ -15,7 +15,12 @@ class Reporting extends Component {
       data: [],
       distinct: [],
       list: false,
-      selected: null
+      selected: null,
+      checkdob: false,
+      genderSelected: null,
+      genderCount: 0,
+      from:0,
+      too:0
     };
   }
 
@@ -75,11 +80,45 @@ class Reporting extends Component {
     return count;
   };
 
+  advanceSearch = () => {
+    const value  = 'bmi'
+    const { from, too } = this.state;
+    if(value == 'bmi') {
+      this.setState({ checkdob: false})
+      const bmi = value;
+     const filter = this.state.posts.filter(list => {
+        if(list.gender == this.state.genderSelected && list.bmi  >= from && list.bmi <= too) {
+         
+          return list;
+        }
+      })
+      console.log('filter',filter)
+      this.setState({genderCount: filter.length, checkdob: true})
+      // const unique = this.getUnique(arr).map(rrr => rrr)
+      // console.log('uni',unique)
+      // arr.filter(row => {
+      //   if(row)
+      // })
+      // console.log('result',this.getOccurrence(arr,   this.getUnique(arr).map(rrr => rrr)))
+
+    } else {
+      this.setState({ checkdob: true})
+    }
+  }
+
+  genderSelection = e => {
+    const { value } = e.target
+    console.log(value)
+    this.setState({genderSelected: value})
+  }
+
   render() {
+    console.log(this.state.from)
     let arr = [];
     let sendCSV = []
     let alQuestion = []
-    const { posts, data, distinct, selected } = this.state;
+    let checkItem = ''
+    const { checkdob, posts, data, distinct, selected } = this.state;
     data.map(row => {
       arr.push(row[1]);
     });
@@ -94,7 +133,7 @@ class Reporting extends Component {
         <Header title="Reporting for AfRef Participants"/>
         <div className="container">
           <div className="row" style={{marginTop:60}}>
-            <div className="col-md-6" style={{marginTop:20}}>
+            <div className="col-md-10 col-md-offset-1" style={{marginTop:20}}>
               <table className="table">
                 <tr>
                   <td>
@@ -116,45 +155,93 @@ class Reporting extends Component {
                   </td>
                 </tr>
               </table>
+              {this.state.list ? (
+         
+         <div className="" style={{marginTop:20}}>
+           <h2 className="h4 lead text-center">
+             List view for {this.state.name}. Total Count:{" "}
+             <span className="badge"> {this.state.count}</span>
+           </h2>
+           {/* <div className="num_count badge">{`${this.state.name}(${this.state.count})`}</div> */}
+           <ul className="list-group" style={{ height:200, overflow:'auto'}}>
+           <li className="list-group-item">
+               <b>Name</b>
+               <span className="badge">
+                   Number of Occurence
+               </span>
+           </li>
+             {this.getUnique(arr).map(row => {
+               checkItem = row
+               return (
+                 <li className="list-group-item">
+                       {row}{" "}
+                   <span className="badge">
+                     {this.getOccurrence(arr, row)}
+                   </span>
+                 </li>
+               );
+             })}
+             {console.log("cd", this.getUnique(arr))}
+           </ul>
+           <hr />
+           {
+             checkItem == 'Male' ?
+             <div className="ad_search">
+               <h4>Advance Search</h4>
+               <table className="table">
+                 <thead>
+                   <tr>
+                   <th>Query</th>
+                   <th>Count</th>
+                   </tr>
+                 </thead>
+                 <tbody>
+                   <tr>
+                     <td>
+                       <p className="text inline"> How  many &nbsp;   
+                          <select onChange={(e) => this.genderSelection(e)}>
+                          <option value="">Select Options</option><option value="Male">Male </option><option value="Female">Female</option></select> 
+                            &nbsp; have same &nbsp;
+                            <select >
+                              <option>Select Options</option>
+                              <option value="bmi">BMI</option>
+                              <option value="dob">Date of Birth</option>
+                            </select> &nbsp; ranges from <input onChange={(e) => this.setState({from: e.target.value})} type="number" style={{width:60}} /> &nbsp; 
+                            to <input type="number" style={{width:60}} onChange={(e) => this.setState({too:e.target.value})} /><button onClick={this.advanceSearch}>Done</button>
+                        </p>
+                      </td>
+                      <td>  { checkdob ? this.state.genderCount: ''}</td>
+                   </tr>
+
+                 </tbody>
+               </table>
+               <div className="col-md-10">
+                 
+                </div>
+                
+                  <div className="col-md-3">
+                   
+                  {/* <form className="form-inline">
+                    <label>From</label><input type="date" />
+                    <label>To</label><input type="date" />
+                  </form> */}
+                  </div> 
+               
+               </div>:''
+           }
+           <div style={{}}>
+           {/* <CSVDownload data={Object.entries(sendCSV)} target="_blank">
+               <p>Download Excel format</p>
+           </CSVDownload> */}
+           </div>
+         </div>
+      
+   ) : (
+     <div></div>
+   )}
             </div>
          
-        {this.state.list ? (
-         
-              <div className="col-md-6" style={{marginTop:20}}>
-                <h2 className="h4 lead text-right">
-                  List view for {this.state.name}. Total Count:{" "}
-                  <span className="badge"> {this.state.count}</span>
-                </h2>
-                {/* <div className="num_count badge">{`${this.state.name}(${this.state.count})`}</div> */}
-                <ul className="list-group" style={{ height:200, overflow:'auto'}}>
-                <li className="list-group-item">
-                    <b>Name</b>
-                    <span className="badge">
-                        Number of Occurence
-                    </span>
-                </li>
-                  {this.getUnique(arr).map(row => {
-                    return (
-                      <li className="list-group-item">
-                            {row}{" "}
-                        <span className="badge">
-                          {this.getOccurrence(arr, row)}
-                        </span>
-                      </li>
-                    );
-                  })}
-                  {console.log("cd", this.getUnique(arr))}
-                </ul>
-                <div style={{}}>
-                {/* <CSVDownload data={Object.entries(sendCSV)} target="_blank">
-                    <p>Download Excel format</p>
-                </CSVDownload> */}
-                </div>
-              </div>
-           
-        ) : (
-          <div></div>
-        )}
+        
         </div></div>
         <Footer />
       </React.Fragment>

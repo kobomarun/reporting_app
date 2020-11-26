@@ -9,7 +9,7 @@ class Reporting extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      posts: [],
+      responses: [],
       count: 0,
       name: "",
       data: [],
@@ -25,11 +25,10 @@ class Reporting extends Component {
   }
 
   componentDidMount() {
-    fetch("https://rp.54gene.com/api/get_participants")
+    fetch("https://dev.rp.54gene.com/api/getResponse/1/1")
       .then(response => response.json())
-      .then(json => this.setState({ posts: json.data }))
-      .catch(err => console.log("fetch error:", err));
-    this.setState({ distinct: this.state.posts });
+      .then(json => this.setState({responses:json.data}))
+      .catch(err => console.log("fetch error:", err))
   }
 
   getUnique = array => {
@@ -50,7 +49,7 @@ class Reporting extends Component {
     console.log(e.target.value);
     const response = e.target.value;
     let allSelected = [];
-    this.state.posts.map((item, i) => {
+    this.state.responses.map((item, i) => {
       Object.entries(item).map(list => {
         allSelected.push(list);
       });
@@ -64,7 +63,7 @@ class Reporting extends Component {
     console.log("sele", allSelected);
     this.setState({
       name: response,
-      count: this.state.posts.length,
+      count: this.state.responses.length,
       distinct: this.getUnique(allSelected),
       data: filterdData,
       list: true,
@@ -86,7 +85,7 @@ class Reporting extends Component {
     if(value == 'bmi') {
       this.setState({ checkdob: false})
       const bmi = value;
-     const filter = this.state.posts.filter(list => {
+     const filter = this.state.responses.filter(list => {
         if(list.gender == this.state.genderSelected && list.bmi  >= from && list.bmi <= too) {
          
           return list;
@@ -118,13 +117,25 @@ class Reporting extends Component {
     let sendCSV = []
     let alQuestion = []
     let checkItem = ''
-    const { checkdob, posts, data, distinct, selected } = this.state;
+    const { checkdob, responses, data, distinct, selected } = this.state;
     data.map(row => {
       arr.push(row[1]);
     });
+    const response_json =  arr.map((r,i)=> {
+      return JSON.parse(r)
+     })
+     const another_json =  response_json.map((r,i)=> {
+      delete r[2];
+      delete r[4];
+      return r
+     })
     console.log(
       "cds",
-      this.getUnique(arr).map(rrr => rrr)
+    another_json
+    );
+    console.log(
+      "object",
+      arr.map((rrr,i) => JSON.parse(rrr))
     );
     
     console.log('que',alQuestion)
@@ -143,7 +154,7 @@ class Reporting extends Component {
                       onChange={e => this.selectParticipantInfo(e)}
                     >
                       <option value="">Select Participant Information</option>
-                      {posts.map((list, i) =>
+                      {responses.map((list, i) =>
                         Object.entries(list).map((item,j) => {
                             if(i == 1) {
                                 return <option value={item[0]}>{item[0]}</option>
@@ -251,7 +262,7 @@ class Reporting extends Component {
 
 Reporting.propTypes = {
     title: PropTypes.string,
-    posts: PropTypes.array,
+    responses: PropTypes.array,
     name: PropTypes.string,
     data: PropTypes.array,
     list: PropTypes.bool

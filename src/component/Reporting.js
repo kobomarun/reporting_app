@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import "../Style.css";
 import Header from "./Header";
 import Footer from "./Footer";
+var md5 = require('md5');
 
 class Reporting extends Component {
   constructor(props) {
@@ -25,7 +26,7 @@ class Reporting extends Component {
   }
 
   componentDidMount() {
-    fetch("https://dev.rp.54gene.com/api/getResponse/1/1")
+    fetch("https://rp.54gene.com/api/getResponse/1/1")
       .then(response => response.json())
       .then(json => this.setState({responses:json.data}))
       .catch(err => console.log("fetch error:", err))
@@ -111,8 +112,11 @@ class Reporting extends Component {
     this.setState({genderSelected: value})
   }
 
+ 
+
   render() {
-    console.log(this.state.from)
+  
+    console.log('first',this.state.responses)
     let arr = [];
     let sendCSV = []
     let alQuestion = []
@@ -125,8 +129,11 @@ class Reporting extends Component {
       return JSON.parse(r)
      })
      const another_json =  response_json.map((r,i)=> {
-      delete r[2];
+      // r[359] = r[359].split("").reverse().join("");
+      r[2] = md5(r[2]);
+      delete r[3];
       delete r[4];
+      // delete r[361];
       return r
      })
     console.log(
@@ -194,6 +201,7 @@ class Reporting extends Component {
              })}
              {console.log("cd", this.getUnique(arr))}
            </ul>
+           <a href={`data:${JSON.stringify(another_json)}`}  download="solid-oncology-data.json">download JSON</a>
            <hr />
            {
              checkItem == 'Male' ?

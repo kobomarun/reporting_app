@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 // import { CSVLink, CSVDownload } from "react-csv";
+import CsvDownload from 'react-json-to-csv';
 import PropTypes from 'prop-types'
 import "../Style.css";
 import Header from "./Header";
 import Footer from "./Footer";
 var md5 = require('md5');
+
 
 class Reporting extends Component {
   constructor(props) {
@@ -130,25 +132,26 @@ class Reporting extends Component {
      })
      const another_json =  response_json.map((r,i)=> {
       // r[359] = r[359].split("").reverse().join("");
-      r[2] = md5(r[2]);
-      delete r[3];
-      delete r[4];
+      // r[2] = md5(r[2]);
+      // delete r[3];
+      // delete r[4];
       // delete r[361];
-      return r
+      return r[10]
      })
+     const csv =  this.getUnique(another_json).map(m => {
+    
+      return m + " : " + this.getOccurrence(another_json, m) 
+    })
     console.log(
       "cds",
-    another_json
+      // another_json
+      JSON.stringify(csv, 0,1)
     );
-    console.log(
-      "object",
-      arr.map((rrr,i) => JSON.parse(rrr))
-    );
+    // another_json.filter(male => male == "Male")
     
-    console.log('que',alQuestion)
     return (
       <React.Fragment>
-        <Header title="Reporting for AfRef Participants"/>
+        <Header title="Reporting APP"/>
         <div className="container">
           <div className="row" style={{marginTop:60}}>
             <div className="col-md-10 col-md-offset-1" style={{marginTop:20}}>
@@ -201,8 +204,9 @@ class Reporting extends Component {
              })}
              {console.log("cd", this.getUnique(arr))}
            </ul>
-           <a href={`data:${JSON.stringify(another_json)}`}  download="solid-oncology-data.json">download JSON</a>
+           <a href={`data:${JSON.stringify(csv,1,1)}`}  download="csv.csv">download JSON</a>
            <hr />
+           <CsvDownload data={csv} />
            {
              checkItem == 'Male' ?
              <div className="ad_search">

@@ -21,12 +21,13 @@ class Reporting extends Component {
       genderSelected: null,
       genderCount: 0,
       from:0,
-      too:0
+      too:0,
+      pid:[]
     };
   }
 
   componentDidMount() {
-    fetch("https://rp.54gene.com/api/getResponse/1/1")
+    fetch("https://rp.54gene.com/api/paradigm/1/8")
       .then(response => response.json())
       .then(json => this.setState({responses:json.data}))
       .catch(err => console.log("fetch error:", err))
@@ -61,12 +62,18 @@ class Reporting extends Component {
         return [dd[0]];
       }
     });
-    console.log("sele", allSelected);
+    const pids = allSelected.filter(dd => {
+      if (dd[0] === 'generated_participant_study_id') {
+        return [dd[0]];
+      }
+    });
+    console.log("sele", pids);
     this.setState({
       name: response,
       count: this.state.responses.length,
       distinct: this.getUnique(allSelected),
       data: filterdData,
+      pid:pids,
       list: true,
       selected: response
     });
@@ -125,27 +132,32 @@ class Reporting extends Component {
     data.map(row => {
       arr.push(row[1]);
     });
+    console.log(
+      "array",
+      arr
+    );
     const response_json =  arr.map((r,i)=> {
       return JSON.parse(r)
      })
      const another_json =  response_json.map((r,i)=> {
       // r[359] = r[359].split("").reverse().join("");
-      r[2] = md5(r[2]);
-      delete r[3];
-      delete r[4];
-      // delete r[361];
-      return r
+      // r[2] = md5(r[2]);
+  
+      // delete r[359];
+      delete r[261];
+      delete r[263];
+      delete r[264];
+      delete r[266];
+      r['participant_study_id'] = md5(this.state.pid[i][1])
+      return r 
      })
     console.log(
       "cds",
     another_json
     );
-    console.log(
-      "object",
-      arr.map((rrr,i) => JSON.parse(rrr))
-    );
     
-    console.log('que',alQuestion)
+    
+    // console.log('que',alQuestion)
     return (
       <React.Fragment>
         <Header title="Reporting for AfRef Participants"/>
@@ -201,7 +213,7 @@ class Reporting extends Component {
              })}
              {console.log("cd", this.getUnique(arr))}
            </ul>
-           <a href={`data:${JSON.stringify(another_json)}`}  download="solid-oncology-data.json">download JSON</a>
+           <a href={`data:${JSON.stringify(another_json)}`}  download="Haemato-oncology-(multiple-myeloma).json">download JSON</a>
            <hr />
            {
              checkItem == 'Male' ?

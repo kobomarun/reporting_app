@@ -4,13 +4,42 @@ import PropTypes from 'prop-types'
 import "../Style.css";
 import Header from "./Header";
 import Footer from "./Footer";
+import Papa from 'papaparse'
 var md5 = require('md5');
+const config = {
+	delimiter: " ",	// auto-detect
+	newline: "",	// auto-detect
+	quoteChar: '"',
+	escapeChar: '"',
+	header: false,
+	transformHeader: undefined,
+	dynamicTyping: false,
+	preview: 0,
+	encoding: "",
+	worker: false,
+	comments: false,
+	step: undefined,
+	complete: undefined,
+	error: undefined,
+	download: true,
+	downloadRequestHeaders: undefined,
+	downloadRequestBody: undefined,
+	skipEmptyLines: false,
+	chunk: undefined,
+	chunkSize: undefined,
+	fastMode: undefined,
+	beforeFirstChunk: undefined,
+	withCredentials: undefined,
+	transform: undefined,
+	delimitersToGuess: [',', ' ', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]
+}
 
 class Reporting extends Component {
   constructor(props) {
     super(props);
     this.state = {
       responses: [],
+      firstresponses: [],
       count: 0,
       name: "",
       data: [],
@@ -22,15 +51,51 @@ class Reporting extends Component {
       genderCount: 0,
       from:0,
       too:0,
-      pid:[]
+      pid:[],
+      dataset:[]
     };
   }
 
   componentDidMount() {
-    fetch("https://rp.54gene.com/api/paradigm/1/8")
+    var dataset = {};    
+    Papa.parse("http://localhost:8888/ndasuapp/pk.csv", {
+      download: true,
+      dynamicTyping: true,
+      complete:  function (results) {
+         dataset =  results.data;
+         localStorage.setItem('dataset',JSON.stringify(dataset))
+        // this.setState({dataset})
+      }
+    });
+  
+    const pid_data = JSON.parse(localStorage.getItem('dataset'));
+    console.log('myyy',pid_data)
+    let newData = []
+ 
+    fetch("https://rp.54gene.com/api/getResponse/15/66")
       .then(response => response.json())
-      .then(json => this.setState({responses:json.data}))
-      .catch(err => console.log("fetch error:", err))
+      .then(json =>  {
+        console.log('fofo',json.data[0])
+        for(let i = 0; i < json.data.length; i++) {
+          // console.log('state',this.state.responses[i].generated_participant_study_id);
+          // console.log(i)
+          // console.log('pids',pid_data[i][0])
+          for(let j=0; j< pid_data.length; j++) {
+            console.log('hmmm',JSON.parse(json.data[i].response))
+            // if(JSON.parse(json.data[i].response) === pid_data[j][0]) {
+             
+            //   newData.push(json.data[i])
+            // }
+          }
+         
+        }
+        this.setState({responses:newData})
+       
+      })
+      .catch(err => console.log("fetch error:", err));
+
+   
+
   }
 
   getUnique = array => {
@@ -122,7 +187,9 @@ class Reporting extends Component {
  
 
   render() {
-  
+   
+
+
     console.log('first',this.state.responses)
     let arr = [];
     let sendCSV = []
@@ -140,20 +207,16 @@ class Reporting extends Component {
       return JSON.parse(r)
      })
      const another_json =  response_json.map((r,i)=> {
-      // r[359] = r[359].split("").reverse().join("");
-      // r[2] = md5(r[2]);
   
-      // delete r[359];
-      delete r[261];
-      delete r[263];
-      delete r[264];
-      delete r[266];
+
+      delete r[418];
+
       r['participant_study_id'] = md5(this.state.pid[i][1])
       return r 
      })
     console.log(
-      "cds",
-    another_json
+      "change",
+    JSON.stringify(another_json)
     );
     
     
@@ -213,7 +276,7 @@ class Reporting extends Component {
              })}
              {console.log("cd", this.getUnique(arr))}
            </ul>
-           <a href={`data:${JSON.stringify(another_json)}`}  download="Haemato-oncology-(multiple-myeloma).json">download JSON</a>
+           <a href={`data:${JSON.stringify(another_json)}`}  download="vascular.json">download JSON</a>
            <hr />
            {
              checkItem == 'Male' ?

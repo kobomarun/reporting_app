@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-// import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink, CSVDownload } from "react-csv";
 import PropTypes from 'prop-types'
 import "../Style.css";
 import Header from "./Header";
@@ -52,27 +52,15 @@ class Reporting extends Component {
       from:0,
       too:0,
       pid:[],
+      center_id:[],
+      contact:[],
       dataset:[]
     };
   }
 
   componentDidMount() {
-    var dataset = {};    
-    Papa.parse("http://localhost:8888/ndasuapp/pk.csv", {
-      download: true,
-      dynamicTyping: true,
-      complete:  function (results) {
-         dataset =  results.data;
-         localStorage.setItem('dataset',JSON.stringify(dataset))
-        // this.setState({dataset})
-      }
-    });
-  
-    const pid_data = JSON.parse(localStorage.getItem('dataset'));
-    console.log('myyy',pid_data)
-    let newData = []
- 
-    fetch("https://rp.54gene.com/api/getResponse/15/66")
+   let newData = []
+    fetch("https://rp.54gene.com/api/getResponse/1/4")
       .then(response => response.json())
       .then(json =>  {
         console.log('fofo',json.data[0])
@@ -80,15 +68,15 @@ class Reporting extends Component {
           // console.log('state',this.state.responses[i].generated_participant_study_id);
           // console.log(i)
           // console.log('pids',pid_data[i][0])
-          for(let j=0; j< pid_data.length; j++) {
-            console.log('hmmm',JSON.parse(json.data[i].response))
+          // for(let j=0; j< pid_data.length; j++) {
+            // console.log('hmmm',JSON.parse(json.data[i].response))
             // if(JSON.parse(json.data[i].response) === pid_data[j][0]) {
              
-            //   newData.push(json.data[i])
+              newData.push(json.data[i])
             // }
           }
          
-        }
+        // }
         this.setState({responses:newData})
        
       })
@@ -113,7 +101,7 @@ class Reporting extends Component {
   };
 
   selectParticipantInfo(e) {
-    console.log(e.target.value);
+    console.log('promi',this.state.responses);
     const response = e.target.value;
     let allSelected = [];
     this.state.responses.map((item, i) => {
@@ -132,18 +120,31 @@ class Reporting extends Component {
         return [dd[0]];
       }
     });
-    console.log("sele", pids);
+    const center_id = allSelected.filter(dd => {
+      if (dd[0] === 'center_id') {
+        return [dd[0]];
+      }
+    });
+    const contact = allSelected.filter(dd => {
+      if (dd[0] === 'recontacted') {
+        return [dd[0]];
+      }
+    });
+    console.log("sele", contact);
     this.setState({
       name: response,
       count: this.state.responses.length,
       distinct: this.getUnique(allSelected),
       data: filterdData,
       pid:pids,
+      center_id,
+      contact,
       list: true,
       selected: response
     });
 
     console.log("dfdf", filterdData);
+    console.log('sttatata',center_id)
   }
 
   getOccurrence = (array, value) => {
@@ -199,26 +200,40 @@ class Reporting extends Component {
     data.map(row => {
       arr.push(row[1]);
     });
-    console.log(
-      "array",
-      arr
-    );
+    // console.log(
+    //   "array",
+    //   arr
+    // );
     const response_json =  arr.map((r,i)=> {
       return JSON.parse(r)
      })
      const another_json =  response_json.map((r,i)=> {
-  
 
-      delete r[418];
+      
+      // r[741] = r[741] !== undefined ? JSON.stringify(r[741]).replace(/,/g, ':')  : r[741] 
+      // r[742] = r[742] !== undefined ? JSON.stringify(r[742]).replace(/,/g, ':')  : r[742] 
+      // r[743] = r[743] !== undefined ? JSON.stringify(r[743]).replace(/,/g, ':') : r[743]
+      // r[744] = r[744] !== undefined ? JSON.stringify(r[744]).replace(/,/g, ':') : r[744] 
+      // r[745] = r[745] !== undefined ? JSON.stringify(r[745]).replace(/,/g, ':') : r[745] 
+      // r[2101] = r[2101] !== undefined ? JSON.stringify(r[2101]).replace(/,/g, ':') : r[2101] 
+      // r[2102] = r[2102] !== undefined ? JSON.stringify(r[2102]).replace(/,/g, ':') : r[2102] 
 
-      r['participant_study_id'] = md5(this.state.pid[i][1])
-      return r 
+      r[126] = r[126] !== undefined ? JSON.stringify(r[126]).replace(/,/g, ':')  : r[126] 
+      r[132] = r[132] !== undefined ? JSON.stringify(r[132]).replace(/,/g, ':')  : r[132] 
+      r[661] = r[661] !== undefined ? JSON.stringify(r[661]).replace(/,/g, ':')  : r[661] 
+      r[666] = r[666] !== undefined ? JSON.stringify(r[666]).replace(/,/g, ':')  : r[666] 
+      r[668] = r[668] !== undefined ? JSON.stringify(r[668]).replace(/,/g, ':')  : r[668] 
+      r['recontact-participant'] = this.state.contact[i][1] == 1 ? "Yes": 'No'
+      r['participant_study_id'] = this.state.pid[i][1]
+      r['center_id'] = this.state.center_id[i][1]
+      
+     return r;
      })
     console.log(
       "change",
-    JSON.stringify(another_json)
+    // JSON.stringify(another_json)
+    another_json
     );
-    
     
     // console.log('que',alQuestion)
     return (
@@ -274,9 +289,16 @@ class Reporting extends Component {
                  </li>
                );
              })}
-             {console.log("cd", this.getUnique(arr))}
+             {/* {console.log("cd", this.getUnique(arr))} */}
            </ul>
-           <a href={`data:${JSON.stringify(another_json)}`}  download="vascular.json">download JSON</a>
+           Download
+           <CSVDownload data={another_json} target="_blank">
+               <p>Download Excel format</p>
+           </CSVDownload> 
+           <a href={`data:${JSON.stringify(another_json)}`}  download="vascular.csv">download JSON</a>
+           <div style={{}}>
+          
+           </div>
            <hr />
            {
              checkItem == 'Male' ?
@@ -323,11 +345,7 @@ class Reporting extends Component {
                
                </div>:''
            }
-           <div style={{}}>
-           {/* <CSVDownload data={Object.entries(sendCSV)} target="_blank">
-               <p>Download Excel format</p>
-           </CSVDownload> */}
-           </div>
+          
          </div>
       
    ) : (

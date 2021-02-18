@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-// import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink, CSVDownload } from "react-csv";
 import PropTypes from 'prop-types'
 import "../Style.css";
 import Header from "./Header";
@@ -58,16 +58,17 @@ class Reporting extends Component {
 
   componentDidMount() {
     var dataset = {};    
-    Papa.parse("http://localhost:8888/ndasuapp/pk.csv", {
+    Papa.parse("http://localhost:8888/ndasuapp/sq.csv", {
       download: true,
       dynamicTyping: true,
       complete:  function (results) {
          dataset =  results.data;
+         
          localStorage.setItem('dataset',JSON.stringify(dataset))
         // this.setState({dataset})
       }
     });
-  
+ 
     const pid_data = JSON.parse(localStorage.getItem('dataset'));
     console.log('myyy',pid_data)
     let newData = []
@@ -81,7 +82,7 @@ class Reporting extends Component {
           // console.log(i)
           // console.log('pids',pid_data[i][0])
           for(let j=0; j< pid_data.length; j++) {
-            console.log('hmmm',JSON.parse(json.data[i].response))
+            // console.log('hmmm',JSON.parse(json.data[i].response))
             // if(JSON.parse(json.data[i].response) === pid_data[j][0]) {
              
             //   newData.push(json.data[i])
@@ -188,7 +189,16 @@ class Reporting extends Component {
 
   render() {
    
-
+const SQ = JSON.parse(localStorage.getItem('dataset'));
+const another_json = SQ.map(dd => {
+  return {
+    'pid' : dd[0],
+    'hash' : md5(dd[0])
+    
+  }
+        
+});
+// console.log('koko', sq)
 
     console.log('first',this.state.responses)
     let arr = [];
@@ -206,7 +216,7 @@ class Reporting extends Component {
     const response_json =  arr.map((r,i)=> {
       return JSON.parse(r)
      })
-     const another_json =  response_json.map((r,i)=> {
+     const another_jsons =  response_json.map((r,i)=> {
   
 
       delete r[418];
@@ -224,6 +234,11 @@ class Reporting extends Component {
     return (
       <React.Fragment>
         <Header title="Reporting for AfRef Participants"/>
+        <div style={{}}>
+            <CSVLink data={Object.entries(another_json)} target="_blank">
+               <p>Download Excel format</p>
+           </CSVLink> 
+           </div>
         <div className="container">
           <div className="row" style={{marginTop:60}}>
             <div className="col-md-10 col-md-offset-1" style={{marginTop:20}}>
@@ -323,11 +338,7 @@ class Reporting extends Component {
                
                </div>:''
            }
-           <div style={{}}>
-           {/* <CSVDownload data={Object.entries(sendCSV)} target="_blank">
-               <p>Download Excel format</p>
-           </CSVDownload> */}
-           </div>
+          
          </div>
       
    ) : (

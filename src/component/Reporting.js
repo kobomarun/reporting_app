@@ -58,7 +58,7 @@ class Reporting extends Component {
 
   componentDidMount() {
     var dataset = {};    
-    Papa.parse("http://localhost:8888/ndasuapp/sq.csv", {
+    Papa.parse("http://localhost:8888/ndasuapp/yale.csv", {
       download: true,
       dynamicTyping: true,
       complete:  function (results) {
@@ -198,7 +198,6 @@ const another_json = SQ.map(dd => {
   }
         
 });
-// console.log('koko', sq)
 
     console.log('first',this.state.responses)
     let arr = [];
@@ -235,7 +234,7 @@ const another_json = SQ.map(dd => {
       <React.Fragment>
         <Header title="Reporting for AfRef Participants"/>
         <div style={{}}>
-            <CSVLink data={Object.entries(another_json)} target="_blank">
+            <CSVLink data={another_json} target="_blank">
                <p>Download Excel format</p>
            </CSVLink> 
            </div>
